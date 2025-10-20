@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌹 Tặng cậu VZ ngày 20-11 🌹</title>
+    <style>
+        /* CSS cho toàn bộ trang */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #ffdde1, #ffafbd);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            transition: background-color 1s;
+        }
+
+        /* Khung chứa nội dung chính */
+        #main-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Giao diện ban đầu & Nhân hoa cố định */
+        #initial-screen {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            transition: opacity 1s, transform 1s;
+            max-width: 90%;
+            z-index: 50;
+        }
+        
+        .rose-icon-lg {
+            font-size: 150px;
+            display: block;
+            margin: 0 auto 20px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        /* ĐIỀU CHỈNH: ĐỊNH VỊ VÀ KÍCH THƯỚC BÔNG HOA BẰNG ẢNH */
+        #rose-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* Bắt đầu bé (0.6) và scale to ra (1.0) */
+            transform: translate(-50%, -50%) scale(0.6); 
+            width: 180px; 
+            height: 180px; 
+            border-radius: 50%; /* Giúp ảnh nhìn tròn hơn */
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.7);
+            opacity: 0;
+            z-index: 10; /* Đảm bảo hoa nằm trên cánh hoa rơi */
+            transition: all 1s ease-in-out;
+            object-fit: cover; /* Đảm bảo ảnh vừa khung */
+        }
+        
+        /* Ẩn ảnh hoa khi màn hình khởi đầu đang hiển thị */
+        #initial-screen:not([style*="display: none"]) ~ #rose-core {
+             opacity: 0;
+             z-index: 0;
+        }
+
+        /* Nút bấm */
+        .btn {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s, background-color 0.3s;
+            font-weight: bold;
+        }
+
+        #btn-yes { background-color: #e74c3c; color: white; }
+        #btn-no { background-color: #bdc3c7; color: #333; }
+        #btn-bloom {
+            background-color: #2ecc71;
+            color: white;
+            font-size: 18px;
+            animation: pulse-bloom 1s infinite;
+        }
+        
+        @keyframes pulse-bloom {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        /* Khung thông điệp (chứa nút "Nở") */
+        #message-box {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 1s;
+            position: absolute;
+            z-index: 55;
+            display: none;
+        }
+
+        /* Hiệu ứng cánh hoa rơi và thông điệp */
+        #petal-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        .petal {
+            position: absolute;
+            background: linear-gradient(to top right, #ff4d6d, #f9a9b6);
+            /* KÍCH THƯỚC CÁNH HOA LỚN HƠN */
+            width: 180px; 
+            height: 180px;
+            border-radius: 50% 10% 50% 10%;
+            opacity: 0;
+            transform: rotate(45deg);
+            z-index: 10;
+        }
+
+        .petal-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #1cb5b3;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 0.5s;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            z-index: 20;
+        }
+
+        /* Hiệu ứng Phấn hoa và Hạt giống (kết thúc) */
+        #final-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #c0392b;
+            font-size: 36px;
+            font-weight: 900;
+            opacity: 0;
+            transition: opacity 2s;
+            z-index: 30;
+        }
+
+        .seed, .pollen {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 25;
+            transition: all 2s ease-out;
+        }
+
+        .seed { width: 5px; height: 7px; background-color: #d35400; }
+        .pollen { width: 3px; height: 3px; background-color: #f1c40f; }
+    </style>
+</head>
+<body>
+    <div id="main-content">
+        <div id="initial-screen">
+            <div class="rose-icon-lg">🌹</div> 
+            <h1 style="color: #c0392b;">Có một bông hoa dành cho z đó 🐱</h1>
+            <p style="font-size: 1.1em;">Cậu có muốn xem bông hoa này "nở" không?</p>
+            <button id="btn-yes" class="btn" onclick="showBloomScreen()">Có muốn!</button>
+            <button id="btn-no" class="btn" onclick="confirmExit()">Không,cậu có thể thoát ở đây🥲 và bảo tớ nhé</button>
+        </div>
+
+        <div id="message-box">
+            <h2>Bông hoa đang chờ tín hiệu từ ní đó...</h2>
+            <button id="btn-bloom" class="btn" onclick="startBloomEffect()">Nhấn để NỞ HOA! ✨</button>
+        </div>
+    </div>
+    
+    <img id="rose-core" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCADbAJIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDy6e6DXjelWNyyJisdw4kJdSp9CMVLHcFeKTM3EuFCKjfPQdaaLnIrS0Wz+3XIJ+6DU2J21ZZ0PQmuGEkwwtXta0dIoA0S8iumtrdIogFAwKsKtvMNky5pVZOnG9rmHtbyOC0/w5d3+HWM+V6iuz06yj0yEIM5HXNa1jFHYn91wh7UmqRLOokjA3e1c1PFRnKxNSblp0K8UnnSBc4Ump5IHtpQwzg1Va3eBVJ4Nbdo63lsA2MjrWk5N6xZg7pXRNaXcUsWwna3oaa43qQOtUriAwngcdjSQXDAFT19a5Iy97Uyv1JxbRRncRueuT8dThPskP8AExLV1q56t1rzjxjfC81whDlIRt/HvXXTbk7s1oJyncmg0a4u4lYbFU/3mp03h+5jGAVY+1VbV3MIKOwIHY1p2etEOsVy2ewY10mj5lsY82gXmflQHPfNZN1oV/DJhoSQe45r0NiNoZTkGmhw33hRYI15I85/s69HH2d+KK9G2r6CinylfWn2DxX4fF5YsbSOEsvO08GvKJ42ilZHUqQehqdtQvHbLXU5J/2zU9jbyajcr5hLAcZNQlY6qcXTVmzPCt2BrsfCkRjg3HvVq20aCNMFAfWtG1t47UAKAFNUZVKqasjUVgsWafbXcC/6xce9Oe1D2/yHqOKyLvzLdCrA/WsanJVVmcsXfQ6A3Fu6/u3U0lvMpmCn7orO0W0xF59zgA9Aam1DVLG0Q5lRW7Ada8ypRjTmuS7Y7a2LF7OJH+UjrQJpLQrPD8y/xL61yUmqSNcBQx2ueK37G5aCIibLoR+VdyjaC7hKDijfj1K1vosbwj+hrO+0JFdMruuB3qhMIZ13QjJPpTJNOLW52E78d6yUFKXvaEcseo7WvEYit2hs+ZCMbuwrgZAS5JOSTkk1p3a3CSMjoQQaomN8ncK7YxUdEdNOKgtCaC8EMOKz7i5Mjk54qSYhBVCWQdqpmsY9Tf0fxI1u6W9wQYjwGJ6V1qlJYhJGQynkEd68nkbca6LQPE0toVt7khoOgPpTTIrUL+9E7TB9aKat3AyBhKuCM9aKdziszzQQlugzXU+F9LmZd/ktg9CRWAAYyR0IrovDmryRsITMR6Amo1PRqNuLsdPBYSBm3oRVWW3mRnXymK+oFXLXW3+0mGUBgOhrWiu7eYlQ6hv7pocpJbHDeUehR0iYT2mM/MnBFWp7VZU5UEGpFtIopDIigFupHerC7QuD0rJJSZlN3d0cvqUckI2ysRF2A4rCmt4blsIPxrrvEUfnWISFN7seAK56PTRAc3U2D/zziOT+JrTRLU9HB4atif4cb/kJDZxiNd2Mr0NaiyoLQAkbm9KoNdpbriBFT3PzN+ZqNLySeQCV8r71kmk2ez/q/XdO8pK/Y07O9S0dhIoK9zV0a1ppwGmVW9DXH6zb3cEscsbl7aQ43r2PofSsHUpyJlCnDLzmmqaseNVwThJxqKzR6DqKxXEgkiAZT1IrJnsUc9MVhad4nmtkCTDeo71rR+I7WcfMMGtFEy9nOBj6tp0seWQZFYMisOD1ruX1KzmQgsOa5jVEi8wtERg00b05PZox8c09FJPFJgBqvW7Rj71M1bsMBnwPnf8AOir3mRe1FBnzeRJeQ7JGIqrAspuVMOdwrfm055WIbitDQ9GjS4VnxtU5JNS2kRzqMbs6Hw5oSrZrcXYLTOM4ParOo6NC2XA2sOhHWra6rawIFEqDHHWq91rNjDCZZrhSPY1zzbl0OFuUnexRs7a62MVunAU4CnmpHuHswyzy7yeg71DpmtxT2V9dKCuzhF+vANYU1xJcOWXdJ/ugmhJrc97KMqWLk6lb4V07st3epvLkBiq+xrLluSx69aSQTc5jkH1U1TeTacNkexp6s+xTp0IqEFZIlkm/Klgl556k1TeTd9aejYHXmjlIWIvI3rS+Cgq4DIwwykcEVheINCETG9tMtaufmXqYj6H29D+FTxOe3StWwmWVWgmGY5VKMD0waqEmjLGYWnjIdpdGcKYTViCIAc1Zmg8mVoz1BxVj7C0SjeQGIyV7r9a3Pim7bmbOAo44qq8mRya0bq1LIWXtWM7EMR3oHHURutAOKbmlHNBpYdvb1NFJiigLHY3upSEgp8ualt9WxGEY896fcwQvGVA5rEmgMTFlPFOUEjljZqxqXN/5nAPFQQwveS+WhHqS3RR6ms5ZCetdDptoi6arsSssh3E+3bP+e9S5WR3Zfg/rNZQ6bv0LFs0OmwPDCTIXxvZxkH0wOgpsmpysv3iB6DgVTmyhPXIqhcXYiQ85PpWOr3Proulho8lNJI0pNUaMZZ/1qnJrjscKePesmcTmZUZG3sAQvcg1pWWkmBftWoYESdI+pduwoMfbznK0UTQxeewmnjVVYZGeNw9cCrogttn+pjYd8ZBrEu9af7U+UXIOMZ6e1Og1tM4kj4PXBo1LjXoJ2bV/Q11gt2OF3p7g5/nUnkvbENnfGf4x/X0qjbTI6go+5T37j61egnMbbW+ZDwQfSlc64qMldD5ks4FS4jV57+ZiQu3KQj19yevtVWa1m2F2ikA7sR3qwZXt2MaOdh5U56ip7abLHzBuVhhs+laKp0PBrZGpynUUt7tIw/LODxWBqMBjmLAcGu0ubPbIyqP/AK4rMvNKM8R+Xp3qz5xPklaRyaqWPFWIrSVzgKa1rfTRaxiS4XaM8ZqeG9tmk2KQD0GaZq5djOGjy4oroxHx/rE/OiizM/aMfdXcUcDMByelc/c3Lqh9Gp1xOZJAM8UxrSe7GIY2b6Cm5XZEI2IYH3HB7127LtAUdAAMVxzaNeW/+siYcdRXXwv59pDKRy6DI9+9Z1Nj6TIZRc5rukZ+pEQwbj1/nWHbp9svkQ/dzk/StXxAxURL0GCaz9HwLh2744qeh2VPfr8rN5rZPtEE20ZIKA/Tn+tQtKt9d5GPs9uOPRj6/if0FLqjt/Y6tH183BI7AiqkdsslpEh+75gLD144/rUs9DrZIna306CIs6iVs8tnC5+v+FZl3NZw/Mtvbg9j5bN/PirerWzm7kNvbCVVCnMn3QMDgCoUaGQbWg8uB/lliBJEZ/vJnke4pnJVd3yqK+4jt3j1DLwfu7nHTosmP61o2Ba5UMevQisa5gfTIrWRD8yljkdxuP8AStzTpokN1cStth3K2fUsM4HvSsOhNp8stH1LF5AT5IUguFPA7jPH9ahhfGMjB9KiS6a7u2lI2gn5R6DsKlu2EN0GA5dQ/PY9/wCVSzvja1zUBM1qwAJkQZX1I9Kitllmi8zZ+67e9V7S9VCDubP0rWLtcRKY2AXuAO9b0pX0Pl87wXI/rEF6/wCZz2p6Jfam/wAsoVB0SufutFutOmHnIdv94dK9CispwciQ066sRJb7bqQBT6jmteU+fVdrRnn4lwBzRXTnwpakkq8+D0+WipsyueBzmn2jXUxdlJjQ8119m0MCqNoA9aq+G4I104g4bzOtXYo4LdmS4YjH3TjqKtRtqY1ZXdixfXVrFbhmHmFugFZVlewzStCq7P4kXPX1o1DBb5Rx2GO1c/diSCUOhKkHII7GsJScmfWYPCxwMY1Erye/+Ro+IwY/s8pA28qc/nVFLbyYlvbbmEnDjvG3+BrQmnXW9AlXj7RENxX3Hf8AEZrO8P6mtrK8NxzFINrZ7ehqTtlKDqp9JapmrAwvrGa2B+dxuT3I5qlaykx4zzxj2NT3llLpky3doPMtwd23+7+XapbaCz1GJpLQCK4By0Bc4PupqTqUnzWe5ZaUFGwAcjAOegPas1LIxyyO2PLYcAHcacDErlPtMlvKDyk0fT8R/hT3jZ/vX9oQeMh2B/LFGppLklqyhrgaUQW6KPNwAFz0zz+lTajbvb2FnGDiFOAW4MrcZYD0GOv0qzFPpuls06iS7uAMeZLwo+gqlatc69qb3d0SUTjpwB2UU+hxTtz3+1L8kW7KMoqnB5qxfxMWWYAOiqEYd1NWnMdrGsshGBwq92PoKbYL50MyN0eNs/lUnocvu8r9SvbtE+FeIYJ4I4NbOnqsBZyxMWOBjnNc9BIVC8git/TZhMhAOGXGTV0n7yPMzRR+qTbdtDR+0SyKQo8tfXvUUohgPmXTnA6s3NHmKjbXcrnv2rndRvWlviqFmhiOBk8Ma7Gz4aMeZm3/AG4v8MSY7fNRWEL2LA/cUVF5Fco7wuyCydpHVETlmY4AFX49St7m63sjNEvAfb/IVmaattb6zLaSqjQ53KGGRmti8ljtVzbsIz6gAgfnTs7WHNLm9SKYJcM7RhghJwHGDis65shKhXBz71Bqd5dxyW8sN00uc5BAxx2xVhdUzaCcwZJbbtDd655Lleh9VgsdTrUVSrO0tvUxGin065Esecjj2I9DVS4jAkEkRwrHIz/KtqadrnjbyeSOwqvLpXmjKEhvTtSuip0Zpe7qiWw1mexAhkAePspPb2NWTa6dfyiS1uvsc55KEfLn2Pb8K5xrWdbkRYIkzgZqeSK5tRl4yy+oocS6WKbjaotjfurLUwgW7t1vIwOJE++Poev6GsO832hBYOFPTcuCPY0601ue2x5UzqP7p5H5VpJ4tnAw0cUn1UipsdDrUqkdJ2ZlW9lLeqJriRba0B5dzjd/ujv/ACrZGr2NjCsNlGZQvQDhSfUnqahn1y61Dj7JaAHu0Ic/mc1Hb2DM+91GTzgAAflVNGVOpyS/dat9f8hYmnvJzPcNuc9B2UegHpW7ZgRW8rnkLGxP5GqcECqfSr72rzaZcpG+ySRNqk9B9fQe/vULVnoyaw9CVSfYw4SEALEfStXT9WsY7eUeZhk+ZuxNctPFPBKYrjcGU9CaXysrnrnvW8EonyGNxksVo9IlvUvEjys0UYIiz1zyaprrChelVrm33KfWs1htJBquZnLGEbG3/ba/3aKw6KLsr2cTc1KR0uN7OQ/qKjF3dTRYMzMo9amsoU1XUM3DER5zgVs3VhbW8R8hcCizIckrJox7ViMyPGTt59q2ZZI7jSPNkjxIqDaEYKGc9OB096ox20so2xLwauJYTW9oEZNyqQQF/M1nKF9UP2kU7vfoJbMJ4EcKFOPmUdj3q4mAgO3g1QYxh/NhDRbjkA1Kl+yqRNGcDoVrK19j6TBZxTcFGtoyV4FlZWwNynKnuDU4jEgyAAe49KgS9ttw3ybM/wB4YqyJbe4QmG4jDL0YOOKfvdT0oVMPL3oNMrSaZBK37yFCfXGDQmh2gyRG2QM/e4qNdZKyeXIkchBxujb+lWRqlqB+8Lx9skcU7SM3VwEpWlZMkjtbeLiOPFDjdkHHHFMXULM9LqPNMkv7W3yzyFif4UHNT7zN41MJSXMmh6EBtp4J9a2rWUWrKhGARya5GbW97q0MGHXj5jkEdqvafq7jc9ypkH8WwEn61pSjZ3Z4ebZnCvR9jS6mprulQzWzT7AdozgcZ+hrkzGkZG1yyHswwy/0P4V2C6taG02rcxOjAgBm5U46VzgWC4U7GG6tmux83BtKzKklpuXKnINYt/bGJ8kcV0SIYW2typ6GqeqWpaIkc0jSErM57FFS/Z39KKRvdGpYttm+U4NbImBQCTkd6yzB5bCRR9a0UjUopJ+Uck00c8mnqaguPJh3RxIYx3FXFhlmgDM3lhhnAHNYeiBr26dgx8kNjb2rp7oiGAIpAc9B6e9aR2Oea5XYyZE8hyF+dyfvNzVDUhtCqD8znJarsh2TBVO4nqax9cutrqqEbj1GelJ7Fwu2ircE/wARDVVucG1+6AM8GlhfLZkOSaWZC5Geg6Cs2zpjoyOKcrGFxhl7+o7UpkeXO5iaRo1xnBB+lWrCETsQCoI6g1N7Dk1uQonmb8ZqxCWQKsi71PbuPpVizszmcYzt4Aq2bFtgLpzgnGata6mbmtimsXmKDEoIJ7GrNjDIbgM2FX69qiiR42OzIHQkd6sW6A7Wxt5wO/NFrib0JfEGjR20kVxDEqxTLzsBwG9+2TWCbd0yyMQa66WJ7rTzAkLSMBkEtzn1rmbpvJVg3BHBFDJhJsjttRdT5Uw3Ad6vCZZY8Vj2JE0zA1tQwCMYxS1KnZMj+yJRVrYKKVjLmIbq3MIbJBWsfz5SrRbjtPatHULg7cdzWbHHk5Y8VTZtT0V2dzodvFY6XHIUG8jO33qO5lO13bJJ68dKzo9fKW6RRRD5RjLGsPVtUuZFEJmO0ks23jJ96ttJGKpuUtTRm1NFf9zKC3djz+VY00bTStIxJZjkmqiEjBq9CfMAHrUXudHJybDbeEhs4JNWJE5A/iq3FDsjz0X1NQ7fMlO3OaQubUrkyDtkU1CVkDJndntVtg68OMimKB5nTGPSlYaZeVGtI0uFfbORwp6EehpW1sTDbOoRlP8AD0IqAh5yAW5x+VQS2xtpU3DcGqIycdDNJPfcvpcIJCC42nkY5yTWhY2vmQrlcjPOegrHlNkIflgbzR/ECRg1DaapfIwgglIG4Nu7jH9DWil1YuVtaHc2ttJBMrRKXVf4SOR9D/SuR8fRGLUIZhK7CdTlWQAqR2yOvXvz9adda7fWqb0unL5JAHTJ68entWNc3WqatEEu5nmRTlfMGSv0PWq54yWg6dJxlzMzoZTE4Ze1dFbahHNEuThqyF0mYjnirkGiOMZfaTSNJ8j3Zo+cPWiq40aXH/HwtFFmY8se5nzTCWQknimGUIM00LkUyRflNSbpIHvTjC0W8LTtvfmqXet7To/9G6UypWitCIWgfAAqe2ttr7VG456etXYotoHFLa4MxCAlycDFOxhzskktwijzm+fHAWqg2qx6jPStSSBEU5Ys/wDER/jVSBFL/MM/Wk9yVLQhMTbRk5B9e1Q3AFvAWyQx+7kda6Cy0pZmZ5HAiQFmyOQBWBqeojUZtkW4WqH92pAyOO9O1kVB3YlndRxqDI2WNTXEzXJHlrnHQVnw2oLb26Cr9pKVJAH41hLyKa1uhhgleMCQYz6VBIraeOBkt3rRmTqyucLyaoagxmEZHzD1pRbk7SBXHRMrgFwM1Y3qqALjFUEJBAqQy7OK3VlsKSbLXn4bn8qbJeFTgdahjillOVU/U1Zj03c26V8+wqtSNFuVftL/AN6itP7Bb/3aKLMOeJz6jAqGVuCB1oaTC0tsm58tUI3WmpWWE7uRXVadbj7KtUhbLIn3a1LBlih2t2q0jKrPmWgXBWGPJ7Vn2M6yzs+TgnGAeTUetXpJKJ0qpobL9uCOcBumfWk2KMPcuzppGxbMBwMYwO341NY2jTKEVMkngGnNanYiLk7iKsaldnR9KYIy/aZAUwG+6pU/N/LFNdzJa6IyPEWogZ0u0AyrJIZUPHKnI/UVm2tskEf7wjPvWYkv2fp1p0szSIH3Gs3eR08jtZGnmMNksAPSo5rqNRti5PtWbBDJdSBQTjua6bSNJiQB2XzGB4BqXFRV2KTUFdlPTZpZNyTRsAw+8RVIECZ4+4JAFde1ox+8QoPaq8OiZLNCqM2ecislV969jNYiLTuc9HYPL8xOBVyC0iHbc49a3GsZkXDwDHqKx542hmJXgg8iuiE4yJ9pz7Ekc6Z2EbfaiW343wyYoZI7iPLjaw71n3Fytrkeb+FaXElfYtYl/viisM6ucnmilc09lIpDdI2FBJ9qvW8JI9DWt4UgifU2DorAA9RWnrVnBFNmOJVz6Uculy51NeU59ZnjOKsLM5Xniq1woV+Bikdj5Q5qSeW5HfMpU5PNZ8DNFOki/eRtwp0hy3JzTkApGqVkegtqdlHYwXssiiMp26lueB36iuV1LVTeRl2xvbk4FZssjNZW6FiVV3IHpnbmoZCeBVN9CI0lEjcluaRGZsJ2NKKdCoMq8d6Rtc27WEwxKEI56mr9gtw8+EmKqOp9KrIAsQxxxWlpCjy3OOSetKq+WNzlnJpNmiV34+diB3J61aihkSN9jlWPQ0iKBFnHNWR/qq4Y3vdnG5M5O68TanHJJATHvjJGcda56TVLt5WkcksTzxWtqKg6zJx3NXhawtp5JjUn6V3QR6K5Yx2OXl1i5dNobH0qjJK0jZckn3q/fwRox2oBWcwxiqZrFLoJRUqopUHHaikUf//Z" alt="Bông hoa hồng đỏ ">
+    
+    <div id="petal-container">
+        </div>
+    <div id="final-message">
+        <p>🌸 CHÚC CẬU NGÀY PHỤ NỮ VIỆT NAM 20-11 VUI VẺ! 💖</p>
+    </div>
+
+    <script>
+        const messages = [
+            "Một số lời muốn gửi tới cậu ngày này",
+            "Chúc cậu luôn có năng lượng tích cực để học tập💪",
+            "Hãy làm những điều vui vẻ cho mk nhất nha vz",
+            "Biết thương mk là điều hp nhất",
+            "Hãy là người đẹp hơn đứa mk ghét và là người nét nhất tong mắt một ai đó💝",
+            "À! Hãy mở khóa hết hdsd cái nhan sắc của mk nhé😹",
+            "Nhắn ngoài nhiều chữ quá t ngại nên nhai lại cho AI làm cho ngắn nhé🥰",
+            
+            'Cuối cùng thì sẽ .......'
+        ];
+
+        const petalContainer = document.getElementById('petal-container');
+        const initialScreen = document.getElementById('initial-screen');
+        const messageBox = document.getElementById('message-box');
+        const finalMessageEl = document.getElementById('final-message');
+        const roseCore = document.getElementById('rose-core'); // Lấy thẻ <img>
+        let currentPetalIndex = 0;
+        
+        let coreX = window.innerWidth / 2;
+        let coreY = window.innerHeight / 2;
+
+        function confirmExit() {
+            if (confirm("Cậu có chắc muốn thoát không? Tớ sẽ bùn lắm đấy🥹!")) {
+                window.location.href = "about:blank"; 
+            }
+        }
+
+        function showBloomScreen() {
+            initialScreen.style.opacity = '0';
+            initialScreen.style.transform = 'scale(0.8)';
+            
+            // HIỆN ẢNH HOA VÀ TẠO HIỆU ỨNG NỞ
+            roseCore.style.opacity = '1'; 
+            roseCore.style.zIndex = '10';
+            // Bông hoa nở to ra từ kích thước ban đầu (0.6) lên (1)
+            roseCore.style.transform = 'translate(-50%, -50%) scale(1)'; 
+
+            setTimeout(() => {
+                initialScreen.style.display = 'none';
+                messageBox.style.display = 'block';
+                
+                messageBox.style.position = 'absolute';
+                messageBox.style.top = '50%';
+                messageBox.style.left = '50%';
+                messageBox.style.transform = 'translate(-50%, -50%)';
+
+                setTimeout(() => {
+                    messageBox.style.opacity = '1';
+                }, 50); 
+            }, 1000);
+        }
+
+        function startBloomEffect() {
+            messageBox.style.opacity = '0';
+            
+            coreX = window.innerWidth / 2;
+            coreY = window.innerHeight / 2;
+            
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+                petalContainer.style.display = 'block';
+                document.body.style.backgroundColor = '#fffaf0'; 
+                dropNextPetal();
+            }, 500);
+        }
+
+        // Tạo và cho rơi từng cánh hoa kèm thông điệp
+        function dropNextPetal() {
+            if (currentPetalIndex < messages.length) {
+                const message = messages[currentPetalIndex];
+                const isLastPetal = currentPetalIndex === messages.length - 1;
+
+                // 1. Tạo và thả cánh hoa
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                
+                // Cánh hoa xuất phát từ VỊ TRÍ BÔNG HOA
+                petal.style.left = coreX + 'px';
+                petal.style.top = coreY + 'px'; 
+                petalContainer.appendChild(petal);
+
+                // Animation rơi
+                setTimeout(() => {
+                    petal.style.transition = 'all 4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    petal.style.opacity = '0.7'; 
+                    petal.style.top = window.innerHeight + 'px';
+                    petal.style.left = Math.random() * window.innerWidth + 'px';
+                    petal.style.transform += ' rotate(' + (360 + Math.random() * 720) + 'deg)';
+                }, 50);
+
+                // 2. Hiển thị thông điệp
+                const petalMessage = document.createElement('div');
+                petalMessage.className = 'petal-message';
+                petalMessage.innerHTML = message;
+                petalContainer.appendChild(petalMessage);
+                
+                setTimeout(() => {
+                    petalMessage.style.opacity = '1';
+                }, 1000); 
+
+                // 3. Ẩn thông điệp và chuẩn bị cho cánh hoa tiếp theo
+                setTimeout(() => {
+                    petalMessage.style.opacity = '0';
+                    currentPetalIndex++;
+                    
+                    if (isLastPetal) {
+                        setTimeout(finalBloom, 2000); 
+                    } else {
+                        setTimeout(dropNextPetal, 2500);
+                    }
+                }, 4000); 
+            }
+        }
+
+        // Hiệu ứng bung phấn hoa, hạt giống và lời chúc cuối
+        function finalBloom() {
+            // ĐIỀU CHỈNH: Áp dụng filter để mô phỏng nhụy hoa bung ra ánh vàng
+            roseCore.style.filter = 'brightness(1.5) hue-rotate(-50deg) saturate(1.5)'; 
+            roseCore.style.transform = 'translate(-50%, -50%) scale(1.5)'; // Bông hoa bung to hơn
+            
+            // Bung 50 "hạt giống" và "phấn hoa"
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = i % 2 === 0 ? 'seed' : 'pollen';
+                
+                // Vị trí ban đầu (Trung tâm bông hoa)
+                particle.style.left = coreX + 'px';
+                particle.style.top = coreY + 'px';
+                petalContainer.appendChild(particle);
+
+                // Hiệu ứng bung ra
+                setTimeout(() => {
+                    const angle = Math.random() * 360;
+                    const distance = Math.random() * 200 + 100;
+                    const finalX = coreX + distance * Math.cos(angle * Math.PI / 180);
+                    const finalY = coreY + distance * Math.sin(angle * Math.PI / 180);
+
+                    particle.style.left = finalX + 'px';
+                    particle.style.top = finalY + 'px';
+                    particle.style.opacity = '0'; 
+                }, 100);
+            }
+
+            // Hiển thị lời chúc cuối cùng
+            setTimeout(() => {
+                finalMessageEl.style.opacity = '1';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
